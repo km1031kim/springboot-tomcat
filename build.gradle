@@ -22,6 +22,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+/**
+ * 자바의 메인 메서드를 실행하기 위해서는 jar 형식으로 빌드해야 함.
+ * jar 안에는 META-INF/MANIFEST.MF 파일에 실행할 main() 메서드의 클래스를 지정해주어야 한다.
+ */
 //일반 Jar 생성
 task buildJar(type: Jar) {
     manifest {
@@ -30,12 +34,17 @@ task buildJar(type: Jar) {
     with jar
 }
 
+/**
+ * JAR 안에는 JAR를 포함할 수 없다.
+ * 하지만 클래스는 포함할 수 있다.
+ * FAT JAR는 모든 JAR 압축을 풀고 클래스를 JAR에 포함시킨다.
+ */
 //Fat Jar 생성
 task buildFatJar(type: Jar) {
     manifest {
         attributes 'Main-Class': 'hello.embed.EmbedTomcatSpringMain'
     }
     duplicatesStrategy = DuplicatesStrategy.WARN
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it1.isDirectory() ? it : zipTree(it) } }
     with jar
 }
